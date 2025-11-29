@@ -51,7 +51,7 @@ export default function ComparePage() {
                                             </Button>
                                         </div>
                                         <div className="h-12 w-12 rounded-lg bg-white/10 mb-4 overflow-hidden">
-                                            <img src={tool.image} alt={tool.name} className="h-full w-full object-cover" />
+                                            <img src={tool.icon} alt={tool.name} className="h-full w-full object-cover" />
                                         </div>
                                         <h3 className="font-bold text-lg mb-1">{tool.name}</h3>
                                         <p className="text-xs text-muted-foreground mb-3">{tool.category}</p>

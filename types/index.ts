@@ -11,6 +11,7 @@ export interface Tool {
     views?: number;
     trending?: boolean;
     featured?: boolean;
+    verified?: boolean;
     rating?: number;
     reviewCount?: number;
     platform?: string[];
