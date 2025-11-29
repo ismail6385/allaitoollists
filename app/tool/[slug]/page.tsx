@@ -58,7 +58,7 @@ export default function ToolDetailPage({ params }: PageProps) {
                                 )}
                             </div>
                             <p className="text-xl text-muted-foreground leading-relaxed">
-                                {tool.description}
+                                {tool.fullDescription}
                             </p>
                         </div>
 
@@ -73,7 +73,7 @@ export default function ToolDetailPage({ params }: PageProps) {
                         <div className="prose prose-invert max-w-none">
                             <h3>About {tool.name}</h3>
                             <p>
-                                {tool.description} This is a placeholder for a longer description.
+                                {tool.fullDescription} This is a placeholder for a longer description.
                                 Ideally, this section would contain a detailed review, features list,
                                 and use cases for the tool. Since we are using mock data, this text is generic.
                             </p>

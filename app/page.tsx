@@ -26,7 +26,7 @@ export default function Home() {
         tool.shortDescription.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (Array.isArray(tool.tags) &&
           tool.tags.some(
-            (tag: any) =>
+            (tag: string) =>
               typeof tag === 'string' &&
               tag.toLowerCase().includes(searchQuery.toLowerCase())
           ));
