@@ -18,48 +18,20 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { MoreHorizontal, Search, CheckCircle, XCircle, Eye, ExternalLink } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
-// Mock Submissions Data
-const submissions = [
-    {
-        id: 'SUB-001',
-        toolName: 'SuperAI Writer',
-        submitter: 'jane@example.com',
-        category: 'Copywriting',
-        date: '2023-12-12',
-        status: 'Pending',
-        url: 'https://superaiwriter.com'
-    },
-    {
-        id: 'SUB-002',
-        toolName: 'ImageGen X',
-        submitter: 'mark@studio.com',
-        category: 'Image Generation',
-        date: '2023-12-11',
-        status: 'Pending',
-        url: 'https://imagegenx.io'
-    },
-    {
-        id: 'SUB-003',
-        toolName: 'CodeBuddy',
-        submitter: 'dev@codebuddy.dev',
-        category: 'Developer Tools',
-        date: '2023-12-10',
-        status: 'Reviewed',
-        url: 'https://codebuddy.dev'
-    },
-    {
-        id: 'SUB-004',
-        toolName: 'VoiceMaster',
-        submitter: 'audio@tech.com',
-        category: 'Text to Speech',
-        date: '2023-12-09',
-        status: 'Rejected',
-        url: 'https://voicemaster.app'
-    },
-];
+export const dynamic = 'force-dynamic';
 
-export default function AdminSubmissionsPage() {
+export default async function AdminSubmissionsPage() {
+    const { data: submissions, error } = await supabase
+        .from('tool_submissions')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching submissions:', error);
+    }
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -98,75 +70,83 @@ export default function AdminSubmissionsPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {submissions.map((submission) => (
-                            <TableRow key={submission.id} className="border-white/10 hover:bg-white/5">
-                                <TableCell>
-                                    <div className="font-medium">{submission.toolName}</div>
-                                    <a href={submission.url} target="_blank" rel="noreferrer" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1">
-                                        {submission.url} <ExternalLink className="h-2 w-2" />
-                                    </a>
-                                </TableCell>
-                                <TableCell>{submission.submitter}</TableCell>
-                                <TableCell>
-                                    <Badge variant="outline" className="font-normal">
-                                        {submission.category}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell className="text-muted-foreground">
-                                    {new Date(submission.date).toLocaleDateString()}
-                                </TableCell>
-                                <TableCell>
-                                    <Badge
-                                        variant={
-                                            submission.status === 'Pending' ? 'secondary' :
-                                                submission.status === 'Rejected' ? 'destructive' : 'default'
-                                        }
-                                        className={
-                                            submission.status === 'Pending' ? 'bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20 border-0' :
-                                                submission.status === 'Rejected' ? '' :
-                                                    'bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 border-0'
-                                        }
-                                    >
-                                        {submission.status}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    <div className="flex items-center justify-end gap-2">
-                                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-green-500 hover:text-green-600 hover:bg-green-500/10" title="Approve">
-                                            <CheckCircle className="h-4 w-4" />
-                                        </Button>
-                                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-500/10" title="Reject">
-                                            <XCircle className="h-4 w-4" />
-                                        </Button>
+                        {submissions && submissions.length > 0 ? (
+                            submissions.map((submission) => (
+                                <TableRow key={submission.id} className="border-white/10 hover:bg-white/5">
+                                    <TableCell>
+                                        <div className="font-medium">{submission.tool_name}</div>
+                                        <a href={submission.tool_url} target="_blank" rel="noreferrer" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1">
+                                            {submission.tool_url} <ExternalLink className="h-2 w-2" />
+                                        </a>
+                                    </TableCell>
+                                    <TableCell>{submission.submitter_email || 'Anonymous'}</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline" className="font-normal">
+                                            {submission.category}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-muted-foreground">
+                                        {new Date(submission.created_at).toLocaleDateString()}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge
+                                            variant={
+                                                submission.status === 'pending' ? 'secondary' :
+                                                    submission.status === 'rejected' ? 'destructive' : 'default'
+                                            }
+                                            className={
+                                                submission.status === 'pending' ? 'bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20 border-0' :
+                                                    submission.status === 'rejected' ? '' :
+                                                        'bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 border-0'
+                                            }
+                                        >
+                                            {submission.status}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <div className="flex items-center justify-end gap-2">
+                                            <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-green-500 hover:text-green-600 hover:bg-green-500/10" title="Approve">
+                                                <CheckCircle className="h-4 w-4" />
+                                            </Button>
+                                            <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-500/10" title="Reject">
+                                                <XCircle className="h-4 w-4" />
+                                            </Button>
 
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" className="h-8 w-8 p-0">
-                                                    <span className="sr-only">Open menu</span>
-                                                    <MoreHorizontal className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                <DropdownMenuItem>
-                                                    <Eye className="mr-2 h-4 w-4" />
-                                                    View Details
-                                                </DropdownMenuItem>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem className="text-green-500">
-                                                    <CheckCircle className="mr-2 h-4 w-4" />
-                                                    Approve
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem className="text-red-600">
-                                                    <XCircle className="mr-2 h-4 w-4" />
-                                                    Reject
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </div>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" className="h-8 w-8 p-0">
+                                                        <span className="sr-only">Open menu</span>
+                                                        <MoreHorizontal className="h-4 w-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                    <DropdownMenuItem>
+                                                        <Eye className="mr-2 h-4 w-4" />
+                                                        View Details
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem className="text-green-500">
+                                                        <CheckCircle className="mr-2 h-4 w-4" />
+                                                        Approve
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem className="text-red-600">
+                                                        <XCircle className="mr-2 h-4 w-4" />
+                                                        Reject
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                                    {error ? 'Error loading submissions' : 'No submissions found'}
                                 </TableCell>
                             </TableRow>
-                        ))}
+                        )}
                     </TableBody>
                 </Table>
             </div>

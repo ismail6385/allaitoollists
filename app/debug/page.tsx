@@ -36,11 +36,11 @@ export default function DebugPage() {
 
             // Test 2: Check user_profiles table
             const { error: profileError } = await supabase.from('user_profiles').select('count').limit(1);
-            setTableCheck(prev => ({ ...prev, user_profiles: profileError ? `Error: ${profileError.message}` : 'Accessible' }));
+            setTableCheck((prev: any) => ({ ...prev, user_profiles: profileError ? `Error: ${profileError.message}` : 'Accessible' }));
 
             // Test 3: Check contact_messages table
             const { error: contactError } = await supabase.from('contact_messages').select('count').limit(1);
-            setTableCheck(prev => ({ ...prev, contact_messages: contactError ? `Error: ${contactError.message}` : 'Accessible' }));
+            setTableCheck((prev: any) => ({ ...prev, contact_messages: contactError ? `Error: ${contactError.message}` : 'Accessible' }));
 
         } catch (err: any) {
             setStatus(`Unexpected Error: ${err.message}`);

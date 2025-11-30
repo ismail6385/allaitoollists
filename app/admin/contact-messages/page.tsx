@@ -17,33 +17,28 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
-import { MoreHorizontal, Search, Plus, Pencil, Trash2, ExternalLink, Eye } from 'lucide-react';
+import { MoreHorizontal, Search, Mail, CheckCheck, Trash2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AdminToolsPage() {
-    const { data: tools, error } = await supabase
-        .from('tools')
+export default async function ContactMessagesPage() {
+    const { data: messages, error } = await supabase
+        .from('contact_messages')
         .select('*')
         .order('created_at', { ascending: false });
 
     if (error) {
-        console.error('Error fetching tools:', error);
+        console.error('Error fetching contact messages:', error);
     }
 
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold">Manage Tools</h1>
-                    <p className="text-muted-foreground">View and edit all AI tools in the directory.</p>
+                    <h1 className="text-3xl font-bold">Contact Messages</h1>
+                    <p className="text-muted-foreground">View and manage messages from your contact form.</p>
                 </div>
-                <Button>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add New Tool
-                </Button>
             </div>
 
             {/* Filters */}
@@ -51,63 +46,60 @@ export default async function AdminToolsPage() {
                 <div className="relative flex-1 max-w-sm">
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
-                        placeholder="Search tools..."
+                        placeholder="Search messages..."
                         className="pl-9 bg-card/50"
                     />
                 </div>
+                <div className="flex gap-2">
+                    <Button variant="outline" size="sm" className="hidden sm:flex">Unread</Button>
+                    <Button variant="ghost" size="sm" className="hidden sm:flex">All</Button>
+                </div>
             </div>
 
-            {/* Tools Table */}
+            {/* Messages Table */}
             <div className="rounded-md border border-white/10 bg-card/50">
                 <Table>
                     <TableHeader>
                         <TableRow className="border-white/10 hover:bg-white/5">
-                            <TableHead>Tool Name</TableHead>
-                            <TableHead>Category</TableHead>
-                            <TableHead>Pricing</TableHead>
-                            <TableHead>Views</TableHead>
+                            <TableHead>From</TableHead>
+                            <TableHead>Subject</TableHead>
+                            <TableHead>Message</TableHead>
+                            <TableHead>Date</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {tools && tools.length > 0 ? (
-                            tools.map((tool) => (
-                                <TableRow key={tool.id} className="border-white/10 hover:bg-white/5">
+                        {messages && messages.length > 0 ? (
+                            messages.map((message) => (
+                                <TableRow key={message.id} className="border-white/10 hover:bg-white/5">
                                     <TableCell>
-                                        <div className="flex items-center gap-3">
-                                            <div className="h-9 w-9 rounded bg-primary/10 flex items-center justify-center overflow-hidden">
-                                                {tool.icon ? (
-                                                    <img src={tool.icon} alt={tool.name} className="h-5 w-5 object-contain" />
-                                                ) : (
-                                                    <span className="font-bold text-primary text-xs">{tool.name[0]}</span>
-                                                )}
-                                            </div>
-                                            <div>
-                                                <div className="font-medium">{tool.name}</div>
-                                                <Link href={tool.url} target="_blank" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1">
-                                                    Visit Site <ExternalLink className="h-2 w-2" />
-                                                </Link>
-                                            </div>
+                                        <div>
+                                            <div className="font-medium">{message.name}</div>
+                                            <div className="text-xs text-muted-foreground">{message.email}</div>
                                         </div>
                                     </TableCell>
                                     <TableCell>
-                                        <Badge variant="outline" className="font-normal">
-                                            {tool.category}
-                                        </Badge>
+                                        <span className="font-medium">{message.subject}</span>
                                     </TableCell>
                                     <TableCell>
-                                        <span className="text-sm">{tool.pricing}</span>
+                                        <p className="text-sm text-muted-foreground line-clamp-2 max-w-md">
+                                            {message.message}
+                                        </p>
+                                    </TableCell>
+                                    <TableCell className="text-muted-foreground">
+                                        {new Date(message.created_at).toLocaleDateString()}
                                     </TableCell>
                                     <TableCell>
-                                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                                            <Eye className="h-3 w-3" />
-                                            {tool.views?.toLocaleString() || 0}
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Badge className="bg-green-500/10 text-green-500 hover:bg-green-500/20 border-0">
-                                            Published
+                                        <Badge
+                                            variant={message.status === 'unread' ? 'secondary' : 'default'}
+                                            className={
+                                                message.status === 'unread' ? 'bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 border-0' :
+                                                    message.status === 'replied' ? 'bg-green-500/10 text-green-500 hover:bg-green-500/20 border-0' :
+                                                        'bg-gray-500/10 text-gray-500 hover:bg-gray-500/20 border-0'
+                                            }
+                                        >
+                                            {message.status}
                                         </Badge>
                                     </TableCell>
                                     <TableCell className="text-right">
@@ -121,8 +113,12 @@ export default async function AdminToolsPage() {
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                                 <DropdownMenuItem>
-                                                    <Pencil className="mr-2 h-4 w-4" />
-                                                    Edit Tool
+                                                    <Mail className="mr-2 h-4 w-4" />
+                                                    Reply
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem>
+                                                    <CheckCheck className="mr-2 h-4 w-4" />
+                                                    Mark as Read
                                                 </DropdownMenuItem>
                                                 <DropdownMenuSeparator />
                                                 <DropdownMenuItem className="text-red-600">
@@ -137,7 +133,7 @@ export default async function AdminToolsPage() {
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                                    {error ? 'Error loading tools' : 'No tools found'}
+                                    {error ? 'Error loading messages' : 'No messages found'}
                                 </TableCell>
                             </TableRow>
                         )}
