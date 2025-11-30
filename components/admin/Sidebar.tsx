@@ -25,6 +25,7 @@ export function Sidebar() {
                 <SidebarLink href="/admin" icon={LayoutDashboard}>Dashboard</SidebarLink>
                 <SidebarLink href="/admin/submissions" icon={FileText}>Submissions</SidebarLink>
                 <SidebarLink href="/admin/tools" icon={PlusCircle}>Manage Tools</SidebarLink>
+                <SidebarLink href="/admin/blogs" icon={FileText}>Blogs</SidebarLink>
                 <SidebarLink href="/admin/users" icon={Users}>Users</SidebarLink>
                 <SidebarLink href="/admin/contact-messages" icon={Mail}>Contact Messages</SidebarLink>
                 <SidebarLink href="/admin/settings" icon={Settings}>Settings</SidebarLink>

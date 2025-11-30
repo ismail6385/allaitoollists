@@ -8,17 +8,9 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
-import { MoreHorizontal, Search, Mail, CheckCheck, Trash2 } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { ContactMessageRow } from '@/components/admin/ContactMessageRow';
 
 export const dynamic = 'force-dynamic';
 
@@ -72,63 +64,7 @@ export default async function ContactMessagesPage() {
                     <TableBody>
                         {messages && messages.length > 0 ? (
                             messages.map((message) => (
-                                <TableRow key={message.id} className="border-white/10 hover:bg-white/5">
-                                    <TableCell>
-                                        <div>
-                                            <div className="font-medium">{message.name}</div>
-                                            <div className="text-xs text-muted-foreground">{message.email}</div>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <span className="font-medium">{message.subject}</span>
-                                    </TableCell>
-                                    <TableCell>
-                                        <p className="text-sm text-muted-foreground line-clamp-2 max-w-md">
-                                            {message.message}
-                                        </p>
-                                    </TableCell>
-                                    <TableCell className="text-muted-foreground">
-                                        {new Date(message.created_at).toLocaleDateString()}
-                                    </TableCell>
-                                    <TableCell>
-                                        <Badge
-                                            variant={message.status === 'unread' ? 'secondary' : 'default'}
-                                            className={
-                                                message.status === 'unread' ? 'bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 border-0' :
-                                                    message.status === 'replied' ? 'bg-green-500/10 text-green-500 hover:bg-green-500/20 border-0' :
-                                                        'bg-gray-500/10 text-gray-500 hover:bg-gray-500/20 border-0'
-                                            }
-                                        >
-                                            {message.status}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" className="h-8 w-8 p-0">
-                                                    <span className="sr-only">Open menu</span>
-                                                    <MoreHorizontal className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                <DropdownMenuItem>
-                                                    <Mail className="mr-2 h-4 w-4" />
-                                                    Reply
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem>
-                                                    <CheckCheck className="mr-2 h-4 w-4" />
-                                                    Mark as Read
-                                                </DropdownMenuItem>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem className="text-red-600">
-                                                    <Trash2 className="mr-2 h-4 w-4" />
-                                                    Delete
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </TableCell>
-                                </TableRow>
+                                <ContactMessageRow key={message.id} message={message} />
                             ))
                         ) : (
                             <TableRow>

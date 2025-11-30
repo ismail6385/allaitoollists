@@ -1,11 +1,29 @@
 import { Sidebar } from '@/components/admin/Sidebar';
 import { AdminHeader } from '@/components/admin/AdminHeader';
+import { redirect } from 'next/navigation';
+import { isAdmin, getServerUser } from '@/lib/auth-helpers';
 
-export default function AdminLayout({
+export default async function AdminLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    // Check if user is logged in
+    const user = await getServerUser();
+
+    if (!user) {
+        // Not logged in, redirect to login
+        redirect('/login');
+    }
+
+    // Check if user is admin
+    const admin = await isAdmin();
+
+    if (!admin) {
+        // Logged in but not admin, redirect to home
+        redirect('/');
+    }
+
     return (
         <div className="min-h-screen flex bg-background">
             {/* Sidebar */}
