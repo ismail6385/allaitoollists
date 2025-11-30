@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, FileText, Users, Settings, LogOut, PlusCircle } from 'lucide-react';
+import { LayoutDashboard, FileText, Users, Settings, LogOut, PlusCircle, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
@@ -26,6 +26,7 @@ export function Sidebar() {
                 <SidebarLink href="/admin/submissions" icon={FileText}>Submissions</SidebarLink>
                 <SidebarLink href="/admin/tools" icon={PlusCircle}>Manage Tools</SidebarLink>
                 <SidebarLink href="/admin/users" icon={Users}>Users</SidebarLink>
+                <SidebarLink href="/admin/contact-messages" icon={Mail}>Contact Messages</SidebarLink>
                 <SidebarLink href="/admin/settings" icon={Settings}>Settings</SidebarLink>
             </nav>
 

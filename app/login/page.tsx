@@ -36,9 +36,9 @@ export default function LoginPage() {
         } else {
             toast({
                 title: 'Welcome back!',
-                description: 'You have successfully logged in.',
+                description: 'You can now submit your AI tool.',
             });
-            router.push('/');
+            router.push('/submit');
         }
 
         setLoading(false);
