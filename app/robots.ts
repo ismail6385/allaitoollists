@@ -1,12 +1,14 @@
 import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
+    const baseUrl = 'https://aitoollist.com'; // Replace with your actual domain
+
     return {
         rules: {
             userAgent: '*',
             allow: '/',
-            disallow: '/admin/',
+            disallow: ['/api/', '/admin/', '/private/'],
         },
-        sitemap: 'https://aitoollist.com/sitemap.xml',
+        sitemap: `${baseUrl}/sitemap.xml`,
     };
 }

@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, FileText, Eye, TrendingUp, DollarSign } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { AnalyticsCharts } from '@/components/admin/AnalyticsCharts';
 
 export const dynamic = 'force-dynamic';
 
@@ -62,6 +63,31 @@ export default async function AdminDashboard() {
         },
     ];
 
+    // Mock data for charts (since we don't have real historical data yet)
+    const dailyViews = [
+        { date: 'Mon', views: 120 },
+        { date: 'Tue', views: 145 },
+        { date: 'Wed', views: 132 },
+        { date: 'Thu', views: 198 },
+        { date: 'Fri', views: 240 },
+        { date: 'Sat', views: 180 },
+        { date: 'Sun', views: 210 },
+    ];
+
+    // Calculate category stats from toolsData
+    const categoryCount: Record<string, number> = {};
+    const { data: allTools } = await supabase.from('tools').select('category');
+
+    allTools?.forEach(tool => {
+        const cat = tool.category || 'Uncategorized';
+        categoryCount[cat] = (categoryCount[cat] || 0) + 1;
+    });
+
+    const categoryStats = Object.entries(categoryCount)
+        .map(([name, value]) => ({ name, value }))
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 5); // Top 5 categories
+
     return (
         <div className="space-y-8">
             <div>
@@ -89,6 +115,9 @@ export default async function AdminDashboard() {
                 ))}
             </div>
 
+            {/* Analytics Charts */}
+            <AnalyticsCharts data={{ dailyViews, categoryStats }} />
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Recent Submissions */}
                 <Card className="bg-card/50 border-white/10">
@@ -113,8 +142,8 @@ export default async function AdminDashboard() {
                                         </div>
                                         <div className="flex gap-2">
                                             <span className={`text-xs px-2 py-1 rounded ${submission.status === 'approved' ? 'bg-green-500/10 text-green-500' :
-                                                    submission.status === 'rejected' ? 'bg-red-500/10 text-red-500' :
-                                                        'bg-yellow-500/10 text-yellow-500'
+                                                submission.status === 'rejected' ? 'bg-red-500/10 text-red-500' :
+                                                    'bg-yellow-500/10 text-yellow-500'
                                                 }`}>
                                                 {submission.status}
                                             </span>

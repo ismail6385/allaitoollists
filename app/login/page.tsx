@@ -38,7 +38,11 @@ export default function LoginPage() {
                 title: 'Welcome back!',
                 description: 'You can now submit your AI tool.',
             });
-            router.push('/submit');
+
+            // Check if there's a redirect parameter
+            const params = new URLSearchParams(window.location.search);
+            const redirectTo = params.get('redirect') || '/submit';
+            router.push(redirectTo);
         }
 
         setLoading(false);

@@ -2,6 +2,7 @@
 export interface DatabaseTool {
     id: string;
     name: string;
+    slug: string;
     short_description: string;
     full_description: string;
     url: string;
@@ -67,6 +68,7 @@ export interface ToolSubmission {
 export interface Tool {
     id: string;
     name: string;
+    slug: string;
     shortDescription: string;
     fullDescription: string;
     url: string;
@@ -90,6 +92,7 @@ export function dbToolToTool(dbTool: DatabaseTool): Tool {
     return {
         id: dbTool.id,
         name: dbTool.name,
+        slug: dbTool.slug,
         shortDescription: dbTool.short_description,
         fullDescription: dbTool.full_description,
         url: dbTool.url,
@@ -114,6 +117,7 @@ export function toolToDbTool(tool: Partial<Tool>): Partial<DatabaseTool> {
     return {
         id: tool.id,
         name: tool.name,
+        slug: tool.slug,
         short_description: tool.shortDescription,
         full_description: tool.fullDescription,
         url: tool.url,

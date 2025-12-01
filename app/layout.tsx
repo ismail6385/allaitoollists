@@ -4,6 +4,8 @@ import { Inter } from 'next/font/google';
 import { Toaster } from '@/components/ui/toaster';
 import { Analytics } from '@/components/Analytics';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { ComparisonProvider } from '@/contexts/ComparisonContext';
+import { ChatbotWidget } from '@/components/ChatbotWidget';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -61,9 +63,12 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={inter.className}>
         <AuthProvider>
-          {children}
-          <Analytics />
-          <Toaster />
+          <ComparisonProvider>
+            {children}
+            <Analytics />
+            <Toaster />
+            <ChatbotWidget />
+          </ComparisonProvider>
         </AuthProvider>
       </body>
     </html>

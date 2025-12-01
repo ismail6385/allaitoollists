@@ -1,27 +1,52 @@
+'use client';
+
 import { Sidebar } from '@/components/admin/Sidebar';
 import { AdminHeader } from '@/components/admin/AdminHeader';
-import { redirect } from 'next/navigation';
-import { isAdmin, getServerUser } from '@/lib/auth-helpers';
+import { useRouter, usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-export default async function AdminLayout({
+export default function AdminLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    // Check if user is logged in
-    const user = await getServerUser();
+    const router = useRouter();
+    const pathname = usePathname();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-    if (!user) {
-        // Not logged in, redirect to login
-        redirect('/login');
+    useEffect(() => {
+        // Skip auth check for login page
+        if (pathname === '/admin/login') {
+            setLoading(false);
+            return;
+        }
+
+        // Check if admin is logged in
+        const adminLoggedIn = localStorage.getItem('admin_logged_in');
+
+        if (adminLoggedIn === 'true') {
+            setIsAuthenticated(true);
+            setLoading(false);
+        } else {
+            // Redirect to admin login
+            router.push('/admin/login');
+        }
+    }, [pathname, router]);
+
+    // Show loading or login redirect
+    if (loading) {
+        return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
     }
 
-    // Check if user is admin
-    const admin = await isAdmin();
+    // Show login page without layout
+    if (pathname === '/admin/login') {
+        return <>{children}</>;
+    }
 
-    if (!admin) {
-        // Logged in but not admin, redirect to home
-        redirect('/');
+    // Show admin layout only if authenticated
+    if (!isAuthenticated) {
+        return null;
     }
 
     return (

@@ -8,18 +8,10 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
-import { MoreHorizontal, Search, Plus, Pencil, Trash2, ExternalLink, Eye } from 'lucide-react';
+import { Search, Plus, Upload } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import { ToolRow } from '@/components/admin/ToolRow';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,12 +30,22 @@ export default async function AdminToolsPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold">Manage Tools</h1>
-                    <p className="text-muted-foreground">View and edit all AI tools in the directory.</p>
+                    <p className="text-muted-foreground">View and manage all AI tools in your directory.</p>
                 </div>
-                <Button>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add New Tool
-                </Button>
+                <div className="flex gap-2">
+                    <Link href="/admin/tools/import">
+                        <Button variant="outline">
+                            <Upload className="mr-2 h-4 w-4" />
+                            Import CSV
+                        </Button>
+                    </Link>
+                    <Link href="/submit">
+                        <Button>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add New Tool
+                        </Button>
+                    </Link>
+                </div>
             </div>
 
             {/* Filters */}
@@ -73,66 +75,7 @@ export default async function AdminToolsPage() {
                     <TableBody>
                         {tools && tools.length > 0 ? (
                             tools.map((tool) => (
-                                <TableRow key={tool.id} className="border-white/10 hover:bg-white/5">
-                                    <TableCell>
-                                        <div className="flex items-center gap-3">
-                                            <div className="h-9 w-9 rounded bg-primary/10 flex items-center justify-center overflow-hidden">
-                                                {tool.icon ? (
-                                                    <img src={tool.icon} alt={tool.name} className="h-5 w-5 object-contain" />
-                                                ) : (
-                                                    <span className="font-bold text-primary text-xs">{tool.name[0]}</span>
-                                                )}
-                                            </div>
-                                            <div>
-                                                <div className="font-medium">{tool.name}</div>
-                                                <Link href={tool.url} target="_blank" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1">
-                                                    Visit Site <ExternalLink className="h-2 w-2" />
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Badge variant="outline" className="font-normal">
-                                            {tool.category}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        <span className="text-sm">{tool.pricing}</span>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                                            <Eye className="h-3 w-3" />
-                                            {tool.views?.toLocaleString() || 0}
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Badge className="bg-green-500/10 text-green-500 hover:bg-green-500/20 border-0">
-                                            Published
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" className="h-8 w-8 p-0">
-                                                    <span className="sr-only">Open menu</span>
-                                                    <MoreHorizontal className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                <DropdownMenuItem>
-                                                    <Pencil className="mr-2 h-4 w-4" />
-                                                    Edit Tool
-                                                </DropdownMenuItem>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem className="text-red-600">
-                                                    <Trash2 className="mr-2 h-4 w-4" />
-                                                    Delete
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </TableCell>
-                                </TableRow>
+                                <ToolRow key={tool.id} tool={tool} />
                             ))
                         ) : (
                             <TableRow>

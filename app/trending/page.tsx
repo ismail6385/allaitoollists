@@ -1,21 +1,38 @@
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
-import { tools } from '@/data/tools';
-import { categories } from '@/types';
 import { ToolCard } from '@/components/ToolCard';
 import { TrendingUp, Flame } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+import { dbToolToTool } from '@/types';
 
-export default function TrendingPage() {
-    // Filter and sort trending tools
-    const trendingTools = tools
-        .filter(tool => tool.trending)
-        .sort((a, b) => (b.views || 0) - (a.views || 0));
+export const dynamic = 'force-dynamic';
 
-    // Group trending tools by category
-    const trendingByCategory = categories.map(category => ({
-        category,
-        tools: trendingTools.filter(tool => tool.category === category)
-    })).filter(group => group.tools.length > 0);
+export default async function TrendingPage() {
+    // Fetch trending tools
+    const { data: dbTools, error } = await supabase
+        .from('tools')
+        .select('*')
+        .eq('trending', true)
+        .order('views', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching trending tools:', error);
+    }
+
+    const trendingTools = (dbTools || []).map(dbToolToTool);
+
+    // Group by category
+    const categoryCounts: Record<string, typeof trendingTools> = {};
+    trendingTools.forEach(tool => {
+        if (!categoryCounts[tool.category]) {
+            categoryCounts[tool.category] = [];
+        }
+        categoryCounts[tool.category].push(tool);
+    });
+
+    const trendingByCategory = Object.entries(categoryCounts)
+        .map(([category, tools]) => ({ category, tools }))
+        .sort((a, b) => b.tools.length - a.tools.length);
 
     return (
         <div className="min-h-screen flex flex-col bg-background">
@@ -47,37 +64,49 @@ export default function TrendingPage() {
                         <span className="text-muted-foreground">({trendingTools.length})</span>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-16">
-                        {trendingTools.map((tool) => (
-                            <ToolCard key={tool.id} tool={tool} />
-                        ))}
-                    </div>
+                    {trendingTools.length > 0 ? (
+                        <>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-16">
+                                {trendingTools.map((tool) => (
+                                    <ToolCard key={tool.id} tool={tool} />
+                                ))}
+                            </div>
 
-                    {/* Trending by Category */}
-                    <div className="space-y-16">
-                        <h2 className="text-3xl font-bold">Trending by Category</h2>
+                            {/* Trending by Category */}
+                            {trendingByCategory.length > 0 && (
+                                <div className="space-y-16">
+                                    <h2 className="text-3xl font-bold">Trending by Category</h2>
 
-                        {trendingByCategory.map(({ category, tools: categoryTools }) => (
-                            <div key={category}>
-                                <div className="flex items-center justify-between mb-6">
-                                    <h3 className="text-2xl font-bold flex items-center gap-2">
-                                        <span className="bg-gradient-to-r from-orange-500 to-red-500 px-4 py-2 rounded-lg text-white">
-                                            {category}
-                                        </span>
-                                        <span className="text-muted-foreground text-sm">
-                                            {categoryTools.length} trending
-                                        </span>
-                                    </h3>
-                                </div>
+                                    {trendingByCategory.map(({ category, tools: categoryTools }) => (
+                                        <div key={category}>
+                                            <div className="flex items-center justify-between mb-6">
+                                                <h3 className="text-2xl font-bold flex items-center gap-2">
+                                                    <span className="bg-gradient-to-r from-orange-500 to-red-500 px-4 py-2 rounded-lg text-white">
+                                                        {category}
+                                                    </span>
+                                                    <span className="text-muted-foreground text-sm">
+                                                        {categoryTools.length} trending
+                                                    </span>
+                                                </h3>
+                                            </div>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                    {categoryTools.map((tool) => (
-                                        <ToolCard key={tool.id} tool={tool} />
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                                {categoryTools.map((tool) => (
+                                                    <ToolCard key={tool.id} tool={tool} />
+                                                ))}
+                                            </div>
+                                        </div>
                                     ))}
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            )}
+                        </>
+                    ) : (
+                        <div className="text-center py-12">
+                            <p className="text-xl text-muted-foreground">
+                                No trending tools at the moment.
+                            </p>
+                        </div>
+                    )}
                 </div>
             </main>
 

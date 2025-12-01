@@ -1,24 +1,49 @@
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
-import { tools } from '@/data/tools';
-import { categories } from '@/types';
 import { ToolCard } from '@/components/ToolCard';
 import { TrendingUp, Trophy } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+import { dbToolToTool } from '@/types';
 
-export default function Top10Page() {
-    // Get top 10 tools by views
-    const top10Overall = [...tools]
-        .sort((a, b) => (b.views || 0) - (a.views || 0))
-        .slice(0, 10);
+export const dynamic = 'force-dynamic';
 
-    // Get top 10 by category
-    const top10ByCategory = categories.map(category => ({
-        category,
-        tools: [...tools]
-            .filter(tool => tool.category === category)
-            .sort((a, b) => (b.views || 0) - (a.views || 0))
-            .slice(0, 10)
-    })).filter(cat => cat.tools.length > 0);
+export default async function Top10Page() {
+    // Get top 10 tools by views overall
+    const { data: top10Data, error: top10Error } = await supabase
+        .from('tools')
+        .select('*')
+        .order('views', { ascending: false })
+        .limit(10);
+
+    if (top10Error) {
+        console.error('Error fetching top 10 tools:', error);
+    }
+
+    const top10Overall = (top10Data || []).map(dbToolToTool);
+
+    // Get all tools to calculate top 10 by category
+    const { data: allTools } = await supabase
+        .from('tools')
+        .select('*')
+        .order('views', { ascending: false });
+
+    const tools = (allTools || []).map(dbToolToTool);
+
+    // Group by category and get top 10 for each
+    const categoriesMap: Record<string, typeof tools> = {};
+    tools.forEach(tool => {
+        if (!categoriesMap[tool.category]) {
+            categoriesMap[tool.category] = [];
+        }
+        if (categoriesMap[tool.category].length < 10) {
+            categoriesMap[tool.category].push(tool);
+        }
+    });
+
+    const top10ByCategory = Object.entries(categoriesMap)
+        .map(([category, tools]) => ({ category, tools }))
+        .filter(cat => cat.tools.length > 0)
+        .sort((a, b) => b.tools.length - a.tools.length);
 
     return (
         <div className="min-h-screen flex flex-col bg-background">
@@ -49,39 +74,49 @@ export default function Top10Page() {
                         <h2 className="text-2xl md:text-3xl font-bold">Overall Top 10</h2>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 md:gap-6 mb-12 md:mb-16">
-                        {top10Overall.map((tool, index) => (
-                            <div key={tool.id} className="relative">
-                                <div className="absolute -top-2 -left-2 md:-top-3 md:-left-3 z-10 bg-gradient-to-br from-yellow-400 to-orange-500 text-black font-bold rounded-full w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-sm md:text-lg shadow-lg">
-                                    #{index + 1}
-                                </div>
-                                <ToolCard tool={tool} />
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Top 10 by Category */}
-                    {top10ByCategory.map(({ category, tools: categoryTools }) => (
-                        <div key={category} className="mb-12 md:mb-16">
-                            <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 flex flex-wrap items-center gap-2">
-                                <span className="bg-primary/10 px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-base md:text-xl">
-                                    {category}
-                                </span>
-                                <span className="text-muted-foreground text-xs md:text-sm">Top 10</span>
-                            </h2>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 md:gap-6">
-                                {categoryTools.map((tool, index) => (
+                    {top10Overall.length > 0 ? (
+                        <>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 md:gap-6 mb-12 md:mb-16">
+                                {top10Overall.map((tool, index) => (
                                     <div key={tool.id} className="relative">
-                                        <div className="absolute -top-2 -left-2 md:-top-3 md:-left-3 z-10 bg-primary text-primary-foreground font-bold rounded-full w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm shadow-lg">
+                                        <div className="absolute -top-2 -left-2 md:-top-3 md:-left-3 z-10 bg-gradient-to-br from-yellow-400 to-orange-500 text-black font-bold rounded-full w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-sm md:text-lg shadow-lg">
                                             #{index + 1}
                                         </div>
                                         <ToolCard tool={tool} />
                                     </div>
                                 ))}
                             </div>
+
+                            {/* Top 10 by Category */}
+                            {top10ByCategory.map(({ category, tools: categoryTools }) => (
+                                <div key={category} className="mb-12 md:mb-16">
+                                    <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 flex flex-wrap items-center gap-2">
+                                        <span className="bg-primary/10 px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-base md:text-xl">
+                                            {category}
+                                        </span>
+                                        <span className="text-muted-foreground text-xs md:text-sm">Top 10</span>
+                                    </h2>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 md:gap-6">
+                                        {categoryTools.map((tool, index) => (
+                                            <div key={tool.id} className="relative">
+                                                <div className="absolute -top-2 -left-2 md:-top-3 md:-left-3 z-10 bg-primary text-primary-foreground font-bold rounded-full w-7 h-7 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-sm shadow-lg">
+                                                    #{index + 1}
+                                                </div>
+                                                <ToolCard tool={tool} />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </>
+                    ) : (
+                        <div className="text-center py-12">
+                            <p className="text-xl text-muted-foreground">
+                                No tools available yet.
+                            </p>
                         </div>
-                    ))}
+                    )}
                 </div>
             </main>
 

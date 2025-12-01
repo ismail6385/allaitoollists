@@ -1,155 +1,193 @@
-'use client';
+import { supabase } from '@/lib/supabase';
+import HomeClient from '@/components/HomeClient';
+import { dbToolToTool } from '@/types';
+import { Metadata } from 'next';
 
-import { useState, useMemo } from 'react';
-import { Navbar } from '@/components/Navbar';
-import { Hero } from '@/components/Hero';
-import { FilterSidebar } from '@/components/FilterSidebar';
-import { ToolCard } from '@/components/ToolCard';
-import { Footer } from '@/components/Footer';
-import { tools } from '@/data/tools';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Filter } from 'lucide-react';
+export const dynamic = 'force-dynamic';
 
-export default function Home() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedPricing, setSelectedPricing] = useState<string[]>([]);
+// SEO Metadata
+export const metadata: Metadata = {
+  title: 'AI Tool List - Discover 1000+ Best AI Tools & Software Directory 2024',
+  description: 'Explore the ultimate directory of 1000+ AI tools for writing, coding, design, marketing & more. Compare features, pricing & reviews. Find your perfect AI tool today!',
+  keywords: [
+    'AI tools',
+    'artificial intelligence tools',
+    'AI software directory',
+    'best AI tools 2024',
+    'AI writing tools',
+    'AI image generators',
+    'AI coding assistants',
+    'ChatGPT alternatives',
+    'AI productivity tools',
+    'free AI tools',
+    'AI tool comparison',
+    'machine learning tools',
+    'AI marketing tools',
+    'AI design tools',
+    'AI video editors'
+  ],
+  authors: [{ name: 'AI Tool List Team' }],
+  creator: 'AI Tool List',
+  publisher: 'AI Tool List',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://yoursite.com',
+    title: 'AI Tool List - Discover 1000+ Best AI Tools & Software',
+    description: 'The ultimate directory of AI-powered tools. Find, compare and choose the best AI tools for your needs. Updated daily with new tools and reviews.',
+    siteName: 'AI Tool List',
+    images: [
+      {
+        url: 'https://yoursite.com/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'AI Tool List - Best AI Tools Directory',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AI Tool List - Discover 1000+ Best AI Tools',
+    description: 'Find, compare and choose the best AI tools. Updated daily with new tools, reviews and comparisons.',
+    images: ['https://yoursite.com/twitter-image.jpg'],
+    creator: '@aitoollist',
+  },
+  alternates: {
+    canonical: 'https://yoursite.com',
+  },
+  verification: {
+    google: 'your-google-verification-code',
+    yandex: 'your-yandex-verification-code',
+  },
+};
 
-  // Filter tools based on search and filters
-  const filteredTools = useMemo(() => {
-    return tools.filter((tool) => {
-      // Search filter
-      const matchesSearch =
-        searchQuery === '' ||
-        tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tool.shortDescription.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (Array.isArray(tool.tags) &&
-          tool.tags.some(
-            (tag: string) =>
-              typeof tag === 'string' &&
-              tag.toLowerCase().includes(searchQuery.toLowerCase())
-          ));
+export default async function Home() {
+  // Fetch all tools
+  const { data: dbTools, error } = await supabase
+    .from('tools')
+    .select('*')
+    .order('created_at', { ascending: false });
 
-      // Category filter
-      const matchesCategory =
-        selectedCategories.length === 0 ||
-        selectedCategories.includes(tool.category);
+  if (error) {
+    console.error('Error fetching tools:', error);
+  }
 
-      // Pricing filter
-      const matchesPricing =
-        selectedPricing.length === 0 ||
-        selectedPricing.includes(tool.pricing);
+  const tools = (dbTools || []).map(dbToolToTool);
 
-      return matchesSearch && matchesCategory && matchesPricing;
-    });
-  }, [searchQuery, selectedCategories, selectedPricing]);
+  // Calculate category counts
+  const categoryCounts: Record<string, number> = {};
+  dbTools?.forEach(tool => {
+    const cat = tool.category;
+    if (cat) {
+      categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+    }
+  });
 
-  const handleCategoryToggle = (category: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((c) => c !== category)
-        : [...prev, category]
-    );
+  // Create categories array with counts and descriptions
+  const categoryDescriptions: Record<string, string> = {
+    'Text & Writing': 'AI writing assistants, content generators, and grammar tools',
+    'Image Generation': 'AI art generators, image editors, and design tools',
+    'Video & Audio': 'Video editing, voice synthesis, and audio processing tools',
+    'Code & Development': 'AI coding assistants, debugging tools, and code generators',
+    'Productivity': 'Task automation, scheduling, and workflow optimization tools',
+    'Marketing': 'SEO tools, social media management, and ad optimization',
+    'Design': 'UI/UX design tools, prototyping, and creative AI assistants',
+    'Data & Analytics': 'Data visualization, analysis, and business intelligence tools',
+    'Customer Support': 'Chatbots, help desk automation, and support tools',
+    'Sales': 'Lead generation, CRM automation, and sales enablement tools',
   };
 
-  const handlePricingToggle = (pricing: string) => {
-    setSelectedPricing((prev) =>
-      prev.includes(pricing)
-        ? prev.filter((p) => p !== pricing)
-        : [...prev, pricing]
-    );
+  const categories = Object.entries(categoryCounts)
+    .map(([name, count]) => ({
+      name,
+      count,
+      description: categoryDescriptions[name] || 'Discover amazing AI tools in this category',
+    }))
+    .sort((a, b) => b.count - a.count) // Sort by count descending
+    .slice(0, 9); // Show top 9 categories
+
+  // JSON-LD Schema Markup for SEO
+  const organizationSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'AI Tool List',
+    url: 'https://yoursite.com',
+    logo: 'https://yoursite.com/logo.png',
+    description: 'The ultimate directory of AI-powered tools and software',
+    sameAs: [
+      'https://twitter.com/aitoollist',
+      'https://facebook.com/aitoollist',
+      'https://linkedin.com/company/aitoollist',
+    ],
   };
 
-  const handleResetFilters = () => {
-    setSelectedCategories([]);
-    setSelectedPricing([]);
-    setSearchQuery('');
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'AI Tool List',
+    url: 'https://yoursite.com',
+    description: 'Discover and compare 1000+ AI tools across all categories',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: 'https://yoursite.com/search?q={search_term_string}',
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  };
+
+  const itemListSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'AI Tools Directory',
+    description: 'Comprehensive list of AI-powered tools and software',
+    numberOfItems: tools.length,
+    itemListElement: tools.slice(0, 10).map((tool, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'SoftwareApplication',
+        name: tool.name,
+        description: tool.shortDescription,
+        applicationCategory: tool.category,
+        offers: {
+          '@type': 'Offer',
+          price: tool.pricing === 'Free' ? '0' : undefined,
+          priceCurrency: 'USD',
+        },
+      },
+    })),
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <Navbar onSearch={setSearchQuery} />
+    <>
+      {/* JSON-LD Schema Markup */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+      />
 
-      <main className="flex-grow">
-        <Hero onSearch={setSearchQuery} />
-
-        <div className="container mx-auto px-4 py-12">
-          <div className="flex flex-col md:flex-row gap-8">
-            {/* Mobile Filter Trigger */}
-            <div className="md:hidden mb-4">
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="outline" className="w-full gap-2">
-                    <Filter className="h-4 w-4" />
-                    Filters
-                    {(selectedCategories.length > 0 || selectedPricing.length > 0) && (
-                      <span className="ml-auto bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-xs">
-                        {selectedCategories.length + selectedPricing.length}
-                      </span>
-                    )}
-                  </Button>
-                </SheetTrigger>
-                <SheetContent
-                  side="left"
-                  className="w-[300px] sm:w-[400px] overflow-y-auto"
-                >
-                  <div className="mt-6">
-                    <FilterSidebar
-                      selectedCategories={selectedCategories}
-                      selectedPricing={selectedPricing}
-                      onCategoryToggle={handleCategoryToggle}
-                      onPricingToggle={handlePricingToggle}
-                      onReset={handleResetFilters}
-                    />
-                  </div>
-                </SheetContent>
-              </Sheet>
-            </div>
-
-            <aside className="hidden md:block">
-              <FilterSidebar
-                selectedCategories={selectedCategories}
-                selectedPricing={selectedPricing}
-                onCategoryToggle={handleCategoryToggle}
-                onPricingToggle={handlePricingToggle}
-                onReset={handleResetFilters}
-              />
-            </aside>
-
-            <div className="flex-1">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">
-                  {searchQuery ? 'Search Results' : 'Featured Tools'}
-                </h2>
-                <span className="text-sm text-muted-foreground">
-                  {filteredTools.length}{' '}
-                  {filteredTools.length === 1 ? 'result' : 'results'}
-                </span>
-              </div>
-
-              {filteredTools.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredTools.map((tool) => (
-                    <ToolCard key={tool.id} tool={tool} />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <p className="text-muted-foreground text-lg mb-4">
-                    No tools found matching your criteria
-                  </p>
-                  <Button onClick={handleResetFilters} variant="outline">
-                    Reset Filters
-                  </Button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </main>
-
-      <Footer />
-    </div>
+      <HomeClient initialTools={tools} categories={categories} />
+    </>
   );
 }

@@ -1,10 +1,14 @@
+'use client';
+
 import Link from 'next/link';
+import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, TrendingUp, Eye, Star, Share2 } from 'lucide-react';
+import { ExternalLink, TrendingUp, Eye, Star, Share2, Scale } from 'lucide-react';
 import { ShareDialog } from '@/components/ShareDialog';
 import { Tool } from '@/types';
+import { useComparison } from '@/contexts/ComparisonContext';
 
 interface ToolCardProps {
     tool: Tool;
@@ -12,9 +16,25 @@ interface ToolCardProps {
 
 export function ToolCard({ tool }: ToolCardProps) {
     const isNew = tool.dateAdded && new Date(tool.dateAdded) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const { addToComparison, removeFromComparison, isInComparison, comparisonTools, maxTools } = useComparison();
+    const inComparison = isInComparison(tool.id);
+    const canAddMore = comparisonTools.length < maxTools;
+
+    const handleCompareClick = () => {
+        if (inComparison) {
+            removeFromComparison(tool.id);
+        } else if (canAddMore) {
+            addToComparison(tool);
+        }
+    };
 
     return (
-        <Card className="group hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 bg-card/50 backdrop-blur-sm relative overflow-hidden">
+        <Card className="group relative overflow-hidden bg-card/50 backdrop-blur-sm border border-white/10 hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-2">
+            {/* Hover Glow Effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/5 to-purple-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+            {/* Top Gradient Line */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             {/* Badges */}
             <div className="absolute top-2 right-2 z-10 flex flex-col gap-1">
                 {tool.trending && (
@@ -34,14 +54,24 @@ export function ToolCard({ tool }: ToolCardProps) {
                 <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-3 flex-1">
                         {tool.icon && (
-                            <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden flex-shrink-0">
-                                <img src={tool.icon} alt={tool.name} className="w-8 h-8 object-contain" />
-                            </div>
+                            <Link href={`/tool/${tool.slug}`} className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden flex-shrink-0 hover:opacity-80 transition-opacity">
+                                <div className="relative w-8 h-8">
+                                    <Image
+                                        src={tool.icon}
+                                        alt={tool.name}
+                                        fill
+                                        className="object-contain"
+                                        sizes="32px"
+                                    />
+                                </div>
+                            </Link>
                         )}
                         <div className="flex-1 min-w-0">
-                            <CardTitle className="text-lg group-hover:text-primary transition-colors truncate">
-                                {tool.name}
-                            </CardTitle>
+                            <Link href={`/tool/${tool.slug}`}>
+                                <CardTitle className="text-lg group-hover:text-primary transition-colors truncate">
+                                    {tool.name}
+                                </CardTitle>
+                            </Link>
                             <div className="flex items-center gap-2 mt-1 flex-wrap">
                                 <Badge variant="outline" className="text-xs">
                                     {tool.category}
@@ -110,8 +140,18 @@ export function ToolCard({ tool }: ToolCardProps) {
                         <Badge className="bg-primary/10 text-primary hover:bg-primary/20">
                             {tool.pricing}
                         </Badge>
+                        <Button
+                            size="icon"
+                            variant="ghost"
+                            className={`h-6 w-6 ${inComparison ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}
+                            onClick={handleCompareClick}
+                            disabled={!inComparison && !canAddMore}
+                            title={inComparison ? 'Remove from comparison' : 'Add to comparison'}
+                        >
+                            <Scale className="h-3 w-3" />
+                        </Button>
                         <ShareDialog
-                            url={`https://aitoollist.com/tool/${tool.id}`}
+                            url={`https://aitoollist.com/tool/${tool.slug}`}
                             title={`Check out ${tool.name} on AI Tool List!`}
                             trigger={
                                 <Button size="icon" variant="ghost" className="h-6 w-6 text-muted-foreground hover:text-primary">

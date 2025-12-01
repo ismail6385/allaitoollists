@@ -9,10 +9,12 @@ export default function DebugPage() {
     const [status, setStatus] = useState<string>('Testing connection...');
     const [envCheck, setEnvCheck] = useState<any>({});
     const [tableCheck, setTableCheck] = useState<any>({});
+    const [user, setUser] = useState<any>(null);
 
     useEffect(() => {
         checkEnvironment();
         checkConnection();
+        checkUser();
     }, []);
 
     const checkEnvironment = () => {
@@ -20,6 +22,22 @@ export default function DebugPage() {
             url: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'Defined' : 'Missing',
             key: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'Defined' : 'Missing',
         });
+    };
+
+    const checkUser = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+            // Fetch profile to check admin status
+            const { data: profile } = await supabase
+                .from('user_profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+
+            setUser({ ...session.user, profile });
+        } else {
+            setUser(null);
+        }
     };
 
     const checkConnection = async () => {
@@ -50,6 +68,36 @@ export default function DebugPage() {
     return (
         <div className="p-8 max-w-2xl mx-auto space-y-6">
             <h1 className="text-2xl font-bold">System Debug</h1>
+
+            <Card className="p-4 space-y-4">
+                <h2 className="font-semibold">Current User Session</h2>
+                <div className="space-y-2">
+                    <div className="grid grid-cols-[100px_1fr] gap-2">
+                        <span className="font-medium">Status:</span>
+                        <span className={user ? 'text-green-500' : 'text-yellow-500'}>
+                            {user ? 'Logged In' : 'Not Logged In'}
+                        </span>
+                    </div>
+                    {user && (
+                        <>
+                            <div className="grid grid-cols-[100px_1fr] gap-2">
+                                <span className="font-medium">Email:</span>
+                                <span className="font-mono">{user.email}</span>
+                            </div>
+                            <div className="grid grid-cols-[100px_1fr] gap-2">
+                                <span className="font-medium">User ID:</span>
+                                <span className="font-mono text-xs">{user.id}</span>
+                            </div>
+                            <div className="grid grid-cols-[100px_1fr] gap-2">
+                                <span className="font-medium">Is Admin:</span>
+                                <span className={user.profile?.is_admin ? 'text-green-500 font-bold' : 'text-red-500 font-bold'}>
+                                    {user.profile?.is_admin ? 'YES' : 'NO'}
+                                </span>
+                            </div>
+                        </>
+                    )}
+                </div>
+            </Card>
 
             <Card className="p-4 space-y-4">
                 <h2 className="font-semibold">Environment Variables</h2>

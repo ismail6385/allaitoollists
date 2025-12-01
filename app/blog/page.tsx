@@ -1,113 +1,111 @@
+import { supabase } from '@/lib/supabase';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
+import { Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock } from 'lucide-react';
-import Link from 'next/link';
 
-const blogPosts = [
-    {
-        id: 1,
-        title: 'Top 10 AI Tools for Content Creation in 2024',
-        excerpt: 'Discover the best AI-powered tools that are revolutionizing content creation for writers, marketers, and creators.',
-        category: 'Tools',
-        date: '2024-01-15',
-        readTime: '5 min read',
-        image: '/blog/content-creation.jpg'
-    },
-    {
-        id: 2,
-        title: 'How AI is Transforming Software Development',
-        excerpt: 'Explore how artificial intelligence is changing the way developers write, test, and deploy code.',
-        category: 'Development',
-        date: '2024-01-10',
-        readTime: '7 min read',
-        image: '/blog/development.jpg'
-    },
-    {
-        id: 3,
-        title: 'Getting Started with AI Image Generation',
-        excerpt: 'A beginner-friendly guide to creating stunning images using AI tools like Midjourney and DALL-E.',
-        category: 'Tutorial',
-        date: '2024-01-05',
-        readTime: '6 min read',
-        image: '/blog/image-gen.jpg'
-    },
-];
+export const dynamic = 'force-dynamic';
 
-export default function BlogPage() {
+export const metadata = {
+    title: 'Blog - AI Tools Insights & Tutorials | AI Tool List',
+    description: 'Read the latest articles, tutorials, and insights about AI tools, artificial intelligence, and technology trends.',
+};
+
+export default async function BlogPage() {
+    const { data: blogs, error } = await supabase
+        .from('blogs')
+        .select('*')
+        .eq('is_published', true)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching blogs:', error);
+    }
+
     return (
-        <div className="min-h-screen flex flex-col bg-background">
+        <div className="min-h-screen flex flex-col">
             <Navbar />
-
-            <main className="flex-grow">
+            <main className="flex-1">
                 {/* Hero Section */}
-                <div className="relative isolate overflow-hidden pt-24 pb-16">
-                    <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                        <div className="mx-auto max-w-2xl text-center">
-                            <h1 className="text-4xl font-bold tracking-tight sm:text-6xl bg-gradient-to-b from-white via-white/90 to-white/70 bg-clip-text text-transparent mb-6">
-                                Blog & Guides
+                <section className="relative py-24 bg-gradient-to-br from-primary/10 via-background to-background">
+                    <div className="absolute inset-0 bg-grid-white/5 bg-[size:20px_20px]" />
+                    <div className="container relative mx-auto px-4">
+                        <div className="max-w-3xl mx-auto text-center space-y-4">
+                            <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                                Blog & Insights
                             </h1>
-                            <p className="text-lg leading-8 text-muted-foreground">
-                                Learn about AI tools, tutorials, and industry insights.
+                            <p className="text-xl text-muted-foreground">
+                                Discover the latest trends, tutorials, and insights about AI tools and technology
                             </p>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                {/* Blog Posts */}
-                <div className="container mx-auto px-4 py-12 max-w-6xl">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {blogPosts.map((post) => (
-                            <Link key={post.id} href={`/blog/${post.id}`}>
-                                <Card className="group h-full overflow-hidden hover:bg-card hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
-                                    {/* Image Placeholder */}
-                                    <div className="relative h-48 w-full bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center">
-                                        <span className="text-4xl opacity-30">📝</span>
-                                    </div>
-
-                                    <div className="p-6">
-                                        <div className="flex items-center gap-2 mb-3">
-                                            <Badge variant="secondary">{post.category}</Badge>
-                                        </div>
-
-                                        <h3 className="font-bold text-xl mb-3 group-hover:text-primary transition-colors line-clamp-2">
-                                            {post.title}
-                                        </h3>
-
-                                        <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
-                                            {post.excerpt}
-                                        </p>
-
-                                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                                            <div className="flex items-center gap-1">
-                                                <Calendar className="h-3 w-3" />
-                                                {new Date(post.date).toLocaleDateString('en-US', {
-                                                    month: 'short',
-                                                    day: 'numeric',
-                                                    year: 'numeric'
-                                                })}
-                                            </div>
-                                            <div className="flex items-center gap-1">
-                                                <Clock className="h-3 w-3" />
-                                                {post.readTime}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </Card>
-                            </Link>
-                        ))}
+                {/* Blog Grid */}
+                <section className="py-16">
+                    <div className="container mx-auto px-4">
+                        {blogs && blogs.length > 0 ? (
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {blogs.map((blog) => (
+                                    <Link key={blog.id} href={`/blog/${blog.slug}`}>
+                                        <Card className="h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-white/10 bg-card/50 backdrop-blur overflow-hidden group">
+                                            {blog.cover_image && (
+                                                <div className="relative h-48 overflow-hidden bg-muted">
+                                                    <img
+                                                        src={blog.cover_image}
+                                                        alt={blog.title}
+                                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                                    />
+                                                </div>
+                                            )}
+                                            <CardContent className="p-6 space-y-4">
+                                                {blog.category && (
+                                                    <Badge variant="secondary" className="mb-2">
+                                                        {blog.category}
+                                                    </Badge>
+                                                )}
+                                                <h3 className="text-xl font-bold line-clamp-2 group-hover:text-primary transition-colors">
+                                                    {blog.title}
+                                                </h3>
+                                                {blog.excerpt && (
+                                                    <p className="text-muted-foreground line-clamp-3 text-sm">
+                                                        {blog.excerpt}
+                                                    </p>
+                                                )}
+                                                <div className="flex items-center gap-4 text-sm text-muted-foreground pt-4 border-t">
+                                                    <div className="flex items-center gap-1">
+                                                        <Calendar className="h-4 w-4" />
+                                                        <span>{new Date(blog.created_at).toLocaleDateString()}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
+                                                        <Clock className="h-4 w-4" />
+                                                        <span>5 min read</span>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-2 text-primary font-medium pt-2">
+                                                    Read More
+                                                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </Link>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-16">
+                                <p className="text-xl text-muted-foreground">
+                                    {error ? 'Failed to load blogs' : 'No blog posts published yet'}
+                                </p>
+                                <p className="text-sm text-muted-foreground mt-2">
+                                    Check back soon for new articles!
+                                </p>
+                            </div>
+                        )}
                     </div>
-
-                    {/* Coming Soon Message */}
-                    <div className="mt-12 text-center">
-                        <p className="text-muted-foreground">
-                            More articles coming soon! Subscribe to our newsletter to stay updated.
-                        </p>
-                    </div>
-                </div>
+                </section>
             </main>
-
             <Footer />
         </div>
     );

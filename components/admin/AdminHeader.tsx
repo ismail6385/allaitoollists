@@ -1,6 +1,9 @@
-import { Bell, Search, User } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+'use client';
+
 import { Button } from '@/components/ui/button';
+import { Bell, Settings, User, LogOut } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/components/ui/use-toast';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -11,42 +14,55 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 export function AdminHeader() {
+    const router = useRouter();
+    const { toast } = useToast();
+
+    const handleLogout = () => {
+        localStorage.removeItem('admin_logged_in');
+        localStorage.removeItem('admin_email');
+
+        toast({
+            title: 'Logged Out',
+            description: 'You have been logged out successfully',
+        });
+
+        router.push('/admin/login');
+    };
+
+    const adminEmail = typeof window !== 'undefined' ? localStorage.getItem('admin_email') : '';
+
     return (
-        <header className="h-16 border-b border-white/10 bg-card/50 flex items-center justify-between px-6">
-            <div className="w-96">
-                <div className="relative">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        placeholder="Search admin..."
-                        className="pl-9 bg-secondary/50 border-white/5"
-                    />
+        <header className="border-b border-white/10 bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="flex h-16 items-center justify-between px-6">
+                <div>
+                    <h2 className="text-2xl font-bold">Dashboard</h2>
                 </div>
-            </div>
+                <div className="flex items-center gap-4">
+                    <Button variant="ghost" size="icon">
+                        <Bell className="h-5 w-5" />
+                    </Button>
 
-            <div className="flex items-center gap-4">
-                <Button variant="ghost" size="icon" className="relative">
-                    <Bell className="h-5 w-5 text-muted-foreground" />
-                    <span className="absolute top-2 right-2 h-2 w-2 bg-red-500 rounded-full" />
-                </Button>
-
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="gap-2">
-                            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                                <User className="h-4 w-4 text-primary" />
-                            </div>
-                            <span className="hidden sm:inline-block">Admin User</span>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>Profile</DropdownMenuItem>
-                        <DropdownMenuItem>Settings</DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive">Logout</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                                <User className="h-5 w-5" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-56">
+                            <DropdownMenuLabel>
+                                <div className="flex flex-col space-y-1">
+                                    <p className="text-sm font-medium">Admin</p>
+                                    <p className="text-xs text-muted-foreground">{adminEmail}</p>
+                                </div>
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={handleLogout}>
+                                <LogOut className="mr-2 h-4 w-4" />
+                                Logout
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             </div>
         </header>
     );

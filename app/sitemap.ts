@@ -1,52 +1,43 @@
 import { MetadataRoute } from 'next';
-import { tools } from '@/data/tools';
-import { categories } from '@/types';
+import { supabase } from '@/lib/supabase';
 
-export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = 'https://aitoollist.com';
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+    const baseUrl = 'https://aitoollist.com'; // Replace with your actual domain
+
+    // Fetch all tools
+    const { data: tools } = await supabase
+        .from('tools')
+        .select('slug, category, updated_at');
 
     // Static routes
     const routes = [
         '',
-        '/about',
-        '/blog',
         '/categories',
         '/submit',
-        '/pricing',
-        '/login',
-        '/register',
-        '/terms',
-        '/privacy',
-        '/cookies',
-        '/dmca',
-        '/disclaimer',
-        '/top-10',
-        '/news',
-        '/tutorials',
-        '/deals',
-        '/compare',
+        '/trending',
     ].map((route) => ({
         url: `${baseUrl}${route}`,
-        lastModified: new Date(),
+        lastModified: new Date().toISOString(),
         changeFrequency: 'daily' as const,
         priority: route === '' ? 1 : 0.8,
     }));
 
-    // Dynamic tool routes
-    const toolRoutes = tools.map((tool) => ({
-        url: `${baseUrl}/tool/${tool.id}`,
-        lastModified: new Date(tool.dateAdded || new Date()),
+    // Tool routes
+    const toolRoutes = (tools || []).map((tool) => ({
+        url: `${baseUrl}/tool/${tool.slug}`,
+        lastModified: tool.updated_at || new Date().toISOString(),
         changeFrequency: 'weekly' as const,
         priority: 0.6,
     }));
 
-    // Dynamic category routes
+    // Category routes
+    const categories = Array.from(new Set((tools || []).map((tool) => tool.category).filter(Boolean)));
     const categoryRoutes = categories.map((category) => ({
-        url: `${baseUrl}/category/${category.toLowerCase()}`,
-        lastModified: new Date(),
-        changeFrequency: 'weekly' as const,
+        url: `${baseUrl}/category/${category.toLowerCase().replace(/\s+/g, '-')}`,
+        lastModified: new Date().toISOString(),
+        changeFrequency: 'daily' as const,
         priority: 0.7,
     }));
 
-    return [...routes, ...toolRoutes, ...categoryRoutes];
+    return [...routes, ...categoryRoutes, ...toolRoutes];
 }

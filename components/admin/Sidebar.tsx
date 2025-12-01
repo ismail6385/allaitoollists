@@ -1,17 +1,8 @@
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { LayoutDashboard, FileText, Users, Settings, LogOut, PlusCircle, Mail } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { LayoutDashboard, Users, FileText, Settings, LogOut, PlusCircle, Mail, FolderOpen, Activity, MessageSquare } from 'lucide-react';
 
 export function Sidebar() {
-    // We can't use usePathname in a server component layout directly if we want it to be static, 
-    // but for a dashboard, client-side interactivity for active states is fine.
-    // However, since this is imported into a layout, let's make the Sidebar a client component or handle active state differently.
-    // For simplicity, I'll make this a simple component and we can make it 'use client' if needed, 
-    // but for now let's assume it's a server component and we might miss the active state highlighting without 'use client'.
-    // Let's make it 'use client' to be safe for active states.
-
     return (
         <aside className="w-64 border-r border-white/10 bg-card/50 hidden md:flex flex-col">
             <div className="p-6 border-b border-white/10">
@@ -25,9 +16,13 @@ export function Sidebar() {
                 <SidebarLink href="/admin" icon={LayoutDashboard}>Dashboard</SidebarLink>
                 <SidebarLink href="/admin/submissions" icon={FileText}>Submissions</SidebarLink>
                 <SidebarLink href="/admin/tools" icon={PlusCircle}>Manage Tools</SidebarLink>
+                <SidebarLink href="/admin/categories" icon={FolderOpen}>Categories</SidebarLink>
                 <SidebarLink href="/admin/blogs" icon={FileText}>Blogs</SidebarLink>
+                <SidebarLink href="/admin/newsletter" icon={Mail}>Newsletter</SidebarLink>
                 <SidebarLink href="/admin/users" icon={Users}>Users</SidebarLink>
+                <SidebarLink href="/admin/reviews" icon={MessageSquare}>Reviews</SidebarLink>
                 <SidebarLink href="/admin/contact-messages" icon={Mail}>Contact Messages</SidebarLink>
+                <SidebarLink href="/admin/activity" icon={Activity}>Activity Logs</SidebarLink>
                 <SidebarLink href="/admin/settings" icon={Settings}>Settings</SidebarLink>
             </nav>
 

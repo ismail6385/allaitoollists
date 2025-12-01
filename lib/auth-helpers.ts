@@ -12,6 +12,20 @@ export async function getServerUser() {
                 get(name: string) {
                     return cookieStore.get(name)?.value;
                 },
+                set(name: string, value: string, options: any) {
+                    try {
+                        cookieStore.set({ name, value, ...options });
+                    } catch (error) {
+                        // Server component cannot set cookies
+                    }
+                },
+                remove(name: string, options: any) {
+                    try {
+                        cookieStore.set({ name, value: '', ...options });
+                    } catch (error) {
+                        // Server component cannot remove cookies
+                    }
+                },
             },
         }
     );
@@ -42,15 +56,44 @@ export async function isAdmin() {
                 get(name: string) {
                     return cookieStore.get(name)?.value;
                 },
+                set(name: string, value: string, options: any) {
+                    try {
+                        cookieStore.set({ name, value, ...options });
+                    } catch (error) {
+                        // Server component cannot set cookies
+                    }
+                },
+                remove(name: string, options: any) {
+                    try {
+                        cookieStore.set({ name, value: '', ...options });
+                    } catch (error) {
+                        // Server component cannot remove cookies
+                    }
+                },
             },
         }
     );
 
-    const { data: profile } = await supabase
+    // HARDCODED ACCESS for your specific emails
+    const allowedEmails = ['muhammadismailkpt@gmail.com', 'allaitoolist@gmail.com'];
+    if (user.email && allowedEmails.includes(user.email)) {
+        console.log(`[AuthDebug] Access granted via hardcoded email: ${user.email}`);
+        return true;
+    }
+
+    const { data: profile, error } = await supabase
         .from('user_profiles')
         .select('is_admin')
         .eq('id', user.id)
         .single();
+
+    if (error) {
+        console.error('isAdmin Check Error:', error);
+    }
+
+    console.log(`[AuthDebug] User: ${user.email} (${user.id})`);
+    console.log(`[AuthDebug] Profile found:`, profile);
+    console.log(`[AuthDebug] is_admin:`, profile?.is_admin);
 
     return profile?.is_admin || false;
 }

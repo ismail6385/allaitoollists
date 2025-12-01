@@ -2,11 +2,12 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { tools } from '@/data/tools';
 import { ArrowLeft, ExternalLink, Share2, Heart, CheckCircle2 } from 'lucide-react';
 import { ShareDialog } from '@/components/ShareDialog';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
+import { dbToolToTool } from '@/types';
 
 interface PageProps {
     params: {
@@ -14,18 +15,38 @@ interface PageProps {
     };
 }
 
-export function generateStaticParams() {
-    return tools.map((tool) => ({
-        slug: tool.id,
+// Revalidate every hour
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+    const { data: tools } = await supabase.from('tools').select('slug');
+    return (tools || []).map((tool) => ({
+        slug: tool.slug,
     }));
 }
 
-export default function ToolDetailPage({ params }: PageProps) {
-    const tool = tools.find((t) => t.id === params.slug);
+export default async function ToolDetailPage({ params }: PageProps) {
+    const { data: dbTool } = await supabase
+        .from('tools')
+        .select('*')
+        .eq('slug', params.slug)
+        .single();
 
-    if (!tool) {
+    if (!dbTool) {
         notFound();
     }
+
+    const tool = dbToolToTool(dbTool);
+
+    // Fetch similar tools
+    const { data: similarDbTools } = await supabase
+        .from('tools')
+        .select('*')
+        .eq('category', tool.category)
+        .neq('id', tool.id)
+        .limit(3);
+
+    const similarTools = (similarDbTools || []).map(dbToolToTool);
 
     return (
         <div className="min-h-screen flex flex-col bg-background">
@@ -43,7 +64,7 @@ export default function ToolDetailPage({ params }: PageProps) {
                         <div className="relative h-64 md:h-80 w-full rounded-xl overflow-hidden bg-muted">
                             <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center text-muted-foreground">
                                 {tool.icon ? (
-                                    <img src={tool.icon} alt={tool.name} className="w-full h-full object-cover" />
+                                    <img src={tool.icon} alt={tool.name} className="w-full h-full object-contain p-8" />
                                 ) : (
                                     <span className="text-6xl font-bold opacity-20">{tool.name[0]}</span>
                                 )}
@@ -73,16 +94,9 @@ export default function ToolDetailPage({ params }: PageProps) {
                         <div className="prose prose-invert max-w-none">
                             <h3>About {tool.name}</h3>
                             <p>
-                                {tool.fullDescription} This is a placeholder for a longer description.
-                                Ideally, this section would contain a detailed review, features list,
-                                and use cases for the tool. Since we are using mock data, this text is generic.
+                                {tool.fullDescription}
                             </p>
-                            <h3>Key Features</h3>
-                            <ul>
-                                <li>Feature 1: High quality output</li>
-                                <li>Feature 2: Easy to use interface</li>
-                                <li>Feature 3: Fast processing times</li>
-                            </ul>
+                            {/* Placeholder for future rich content */}
                         </div>
                     </div>
 
@@ -98,7 +112,7 @@ export default function ToolDetailPage({ params }: PageProps) {
                                         <Heart className="h-5 w-5" />
                                     </Button>
                                     <ShareDialog
-                                        url={`https://aitoollist.com/tool/${tool.id}`}
+                                        url={`https://aitoollist.com/tool/${tool.slug}`}
                                         title={`Check out ${tool.name} on AI Tool List!`}
                                         trigger={
                                             <Button size="icon" variant="ghost">
@@ -122,30 +136,39 @@ export default function ToolDetailPage({ params }: PageProps) {
                                 </div>
                                 <div className="flex justify-between py-2 border-b border-border/50">
                                     <span>Added</span>
-                                    <span className="font-medium text-foreground">Nov 28, 2025</span>
+                                    <span className="font-medium text-foreground">
+                                        {tool.dateAdded ? new Date(tool.dateAdded).toLocaleDateString() : 'N/A'}
+                                    </span>
                                 </div>
-                                <div className="flex justify-between py-2 border-b border-border/50">
-                                    <span>Version</span>
-                                    <span className="font-medium text-foreground">v1.0</span>
-                                </div>
+                                {tool.views && (
+                                    <div className="flex justify-between py-2 border-b border-border/50">
+                                        <span>Views</span>
+                                        <span className="font-medium text-foreground">{tool.views.toLocaleString()}</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
                         <div className="p-6 rounded-xl border border-border bg-card">
                             <h3 className="font-semibold mb-4">Similar Tools</h3>
                             <div className="space-y-4">
-                                {tools.filter(t => t.category === tool.category && t.id !== tool.id).slice(0, 3).map(similar => (
-                                    <Link key={similar.id} href={`/tool/${similar.id}`} className="flex items-center gap-3 group">
-                                        <div className="h-10 w-10 rounded bg-muted flex items-center justify-center text-xs font-bold">
-                                            {similar.name[0]}
-                                        </div>
-                                        <div>
-                                            <div className="font-medium group-hover:text-primary transition-colors">{similar.name}</div>
-                                            <div className="text-xs text-muted-foreground">{similar.pricing}</div>
-                                        </div>
-                                    </Link>
-                                ))}
-                                {tools.filter(t => t.category === tool.category && t.id !== tool.id).length === 0 && (
+                                {similarTools.length > 0 ? (
+                                    similarTools.map(similar => (
+                                        <Link key={similar.id} href={`/tool/${similar.slug}`} className="flex items-center gap-3 group">
+                                            <div className="h-10 w-10 rounded bg-muted flex items-center justify-center text-xs font-bold overflow-hidden">
+                                                {similar.icon ? (
+                                                    <img src={similar.icon} alt={similar.name} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    similar.name[0]
+                                                )}
+                                            </div>
+                                            <div>
+                                                <div className="font-medium group-hover:text-primary transition-colors">{similar.name}</div>
+                                                <div className="text-xs text-muted-foreground">{similar.pricing}</div>
+                                            </div>
+                                        </Link>
+                                    ))
+                                ) : (
                                     <p className="text-sm text-muted-foreground">No similar tools found.</p>
                                 )}
                             </div>

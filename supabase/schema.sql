@@ -225,9 +225,14 @@ create table blogs (
   content text,
   excerpt text,
   cover_image text,
+  meta_title text,
+  meta_description text,
+  meta_keywords text,
   author_id uuid references auth.users(id) on delete set null,
   is_published boolean default false,
+  category text,
   tags text[] default '{}',
+  views integer default 0,
   created_at timestamp with time zone default now(),
   updated_at timestamp with time zone default now()
 );
