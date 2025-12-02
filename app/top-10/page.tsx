@@ -16,7 +16,7 @@ export default async function Top10Page() {
         .limit(10);
 
     if (top10Error) {
-        console.error('Error fetching top 10 tools:', error);
+        console.error('Error fetching top 10 tools:', top10Error);
     }
 
     const top10Overall = (top10Data || []).map(dbToolToTool);

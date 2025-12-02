@@ -4,6 +4,7 @@ export const tools: Tool[] = [
     // Text & Writing (10 tools)
     {
         id: 'chatgpt',
+        slug: 'chatgpt',
         name: 'ChatGPT',
         shortDescription: 'Advanced conversational AI for natural language understanding and generation.',
         fullDescription: 'ChatGPT is an advanced language model that can understand and generate human-like text...',
@@ -23,6 +24,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'claude',
+        slug: 'claude',
         name: 'Claude',
         shortDescription: 'Anthropic\'s AI assistant for safe and helpful conversations.',
         fullDescription: 'Claude is designed to be helpful, harmless, and honest...',
@@ -41,6 +43,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'perplexity',
+        slug: 'perplexity',
         name: 'Perplexity AI',
         shortDescription: 'AI-powered search engine with conversational answers.',
         fullDescription: 'Perplexity combines search with AI to give you accurate answers...',
@@ -59,6 +62,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'jasper',
+        slug: 'jasper',
         name: 'Jasper',
         shortDescription: 'AI content platform for creating marketing copy and content.',
         fullDescription: 'Jasper helps marketers create high-quality content faster...',
@@ -76,6 +80,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'grammarly',
+        slug: 'grammarly',
         name: 'Grammarly',
         shortDescription: 'AI writing assistant for grammar, spelling, and style.',
         fullDescription: 'Grammarly helps you write clearly and mistake-free...',
@@ -93,6 +98,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'copy-ai',
+        slug: 'copy-ai',
         name: 'Copy.ai',
         shortDescription: 'AI-powered copywriting tool for marketing content.',
         fullDescription: 'Generate marketing copy, blog posts, and more with AI...',
@@ -110,6 +116,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'writesonic',
+        slug: 'writesonic',
         name: 'Writesonic',
         shortDescription: 'AI writer for articles, blogs, and marketing copy.',
         fullDescription: 'Create SEO-optimized content with AI assistance...',
@@ -127,6 +134,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'quillbot',
+        slug: 'quillbot',
         name: 'QuillBot',
         shortDescription: 'AI paraphrasing and grammar checking tool.',
         fullDescription: 'Rewrite and enhance your writing with AI...',
@@ -144,6 +152,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'wordtune',
+        slug: 'wordtune',
         name: 'Wordtune',
         shortDescription: 'AI writing companion that helps you say what you mean.',
         fullDescription: 'Rewrite suggestions to improve clarity and tone...',
@@ -161,6 +170,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'rytr',
+        slug: 'rytr',
         name: 'Rytr',
         shortDescription: 'AI writing assistant for fast, affordable content.',
         fullDescription: 'Generate blog posts, emails, and ads in seconds...',
@@ -180,6 +190,7 @@ export const tools: Tool[] = [
     // Image Generation (12 tools)
     {
         id: 'midjourney',
+        slug: 'midjourney',
         name: 'Midjourney',
         shortDescription: 'AI-powered image generation from text descriptions.',
         fullDescription: 'Midjourney creates stunning images from text prompts using advanced AI...',
@@ -199,6 +210,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'dall-e',
+        slug: 'dall-e',
         name: 'DALL-E 3',
         shortDescription: 'Create realistic images and art from text descriptions.',
         fullDescription: 'DALL-E 3 is OpenAI\'s latest image generation model...',
@@ -218,6 +230,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'stable-diffusion',
+        slug: 'stable-diffusion',
         name: 'Stable Diffusion',
         shortDescription: 'Open-source AI image generation model.',
         fullDescription: 'Stable Diffusion is a powerful open-source image generation model...',
@@ -236,6 +249,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'leonardo-ai',
+        slug: 'leonardo-ai',
         name: 'Leonardo.ai',
         shortDescription: 'AI art generator for game assets and creative projects.',
         fullDescription: 'Create production-quality visual assets with AI...',
@@ -253,6 +267,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'canva-ai',
+        slug: 'canva-ai',
         name: 'Canva AI',
         shortDescription: 'AI-powered design tools integrated into Canva.',
         fullDescription: 'Magic Design, AI image generation, and more...',
@@ -270,6 +285,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'adobe-firefly',
+        slug: 'adobe-firefly',
         name: 'Adobe Firefly',
         shortDescription: 'Adobe\'s AI art generator for creative professionals.',
         fullDescription: 'Generate images, text effects, and more with Adobe AI...',
@@ -287,6 +303,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'artbreeder',
+        slug: 'artbreeder',
         name: 'Artbreeder',
         shortDescription: 'Collaborative AI art creation platform.',
         fullDescription: 'Mix and evolve images using AI...',
@@ -304,6 +321,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'nightcafe',
+        slug: 'nightcafe',
         name: 'NightCafe',
         shortDescription: 'AI art generator with multiple algorithms.',
         fullDescription: 'Create stunning AI art with various styles...',
@@ -321,6 +339,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'craiyon',
+        slug: 'craiyon',
         name: 'Craiyon',
         shortDescription: 'Free AI image generator (formerly DALL-E mini).',
         fullDescription: 'Generate images from text for free...',
@@ -338,6 +357,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'bluewillow',
+        slug: 'bluewillow',
         name: 'BlueWillow',
         shortDescription: 'Free AI image generator alternative to Midjourney.',
         fullDescription: 'Generate AI art for free on Discord...',
@@ -355,6 +375,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'playground-ai',
+        slug: 'playground-ai',
         name: 'Playground AI',
         shortDescription: 'Free AI image generator with advanced controls.',
         fullDescription: 'Create art with fine-tuned control over generation...',
@@ -372,6 +393,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'remove-bg',
+        slug: 'remove-bg',
         name: 'Remove.bg',
         shortDescription: 'AI-powered background removal tool.',
         fullDescription: 'Remove image backgrounds automatically with AI...',
@@ -391,6 +413,7 @@ export const tools: Tool[] = [
     // Video & Audio (8 tools)
     {
         id: 'runway',
+        slug: 'runway',
         name: 'Runway',
         shortDescription: 'AI-powered video editing and generation platform.',
         fullDescription: 'Runway offers cutting-edge AI tools for video creators...',
@@ -408,6 +431,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'elevenlabs',
+        slug: 'elevenlabs',
         name: 'ElevenLabs',
         shortDescription: 'AI voice generator with realistic text-to-speech.',
         fullDescription: 'ElevenLabs creates the most realistic AI voices...',
@@ -425,6 +449,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'synthesia',
+        slug: 'synthesia',
         name: 'Synthesia',
         shortDescription: 'AI video generation with virtual avatars.',
         fullDescription: 'Create professional videos with AI avatars...',
@@ -442,6 +467,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'descript',
+        slug: 'descript',
         name: 'Descript',
         shortDescription: 'AI-powered video and podcast editing.',
         fullDescription: 'Edit videos as easily as editing text...',
@@ -459,6 +485,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'murf-ai',
+        slug: 'murf-ai',
         name: 'Murf AI',
         shortDescription: 'AI voice generator for voiceovers.',
         fullDescription: 'Create studio-quality voiceovers with AI...',
@@ -476,6 +503,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'pictory',
+        slug: 'pictory',
         name: 'Pictory',
         shortDescription: 'AI video creation from text and articles.',
         fullDescription: 'Turn blog posts into videos automatically...',
@@ -493,6 +521,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'fliki',
+        slug: 'fliki',
         name: 'Fliki',
         shortDescription: 'Text to video with AI voices.',
         fullDescription: 'Create videos from text with realistic AI voices...',
@@ -510,6 +539,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'resemble-ai',
+        slug: 'resemble-ai',
         name: 'Resemble AI',
         shortDescription: 'AI voice cloning and text-to-speech.',
         fullDescription: 'Clone voices and generate speech with AI...',
@@ -529,6 +559,7 @@ export const tools: Tool[] = [
     // Code & Development (8 tools)
     {
         id: 'github-copilot',
+        slug: 'github-copilot',
         name: 'GitHub Copilot',
         shortDescription: 'AI pair programmer that helps you write code faster.',
         fullDescription: 'GitHub Copilot suggests code and entire functions in real-time...',
@@ -547,6 +578,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'tabnine',
+        slug: 'tabnine',
         name: 'Tabnine',
         shortDescription: 'AI code completion for all major IDEs.',
         fullDescription: 'Speed up coding with AI-powered completions...',
@@ -564,6 +596,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'codeium',
+        slug: 'codeium',
         name: 'Codeium',
         shortDescription: 'Free AI-powered code completion.',
         fullDescription: 'Get intelligent code suggestions for free...',
@@ -581,6 +614,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'replit-ai',
+        slug: 'replit-ai',
         name: 'Replit AI',
         shortDescription: 'AI coding assistant in Replit IDE.',
         fullDescription: 'Code faster with AI assistance in Replit...',
@@ -598,6 +632,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'cursor',
+        slug: 'cursor',
         name: 'Cursor',
         shortDescription: 'AI-first code editor.',
         fullDescription: 'Code editor built for AI pair programming...',
@@ -616,6 +651,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'phind',
+        slug: 'phind',
         name: 'Phind',
         shortDescription: 'AI search engine for developers.',
         fullDescription: 'Get instant answers to coding questions...',
@@ -633,6 +669,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'blackbox-ai',
+        slug: 'blackbox-ai',
         name: 'Blackbox AI',
         shortDescription: 'AI code search and autocomplete.',
         fullDescription: 'Find and generate code with AI...',
@@ -650,6 +687,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'sourcegraph-cody',
+        slug: 'sourcegraph-cody',
         name: 'Sourcegraph Cody',
         shortDescription: 'AI coding assistant that knows your codebase.',
         fullDescription: 'Context-aware AI assistant for coding...',
@@ -669,6 +707,7 @@ export const tools: Tool[] = [
     // Productivity & Business (10 tools)
     {
         id: 'notion-ai',
+        slug: 'notion-ai',
         name: 'Notion AI',
         shortDescription: 'AI writing assistant integrated into Notion workspace.',
         fullDescription: 'Notion AI helps you write, brainstorm, and organize faster...',
@@ -686,6 +725,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'otter-ai',
+        slug: 'otter-ai',
         name: 'Otter.ai',
         shortDescription: 'AI meeting notes and transcription.',
         fullDescription: 'Automatically transcribe and summarize meetings...',
@@ -703,6 +743,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'fireflies-ai',
+        slug: 'fireflies-ai',
         name: 'Fireflies.ai',
         shortDescription: 'AI meeting assistant that records and transcribes.',
         fullDescription: 'Never take meeting notes again...',
@@ -720,6 +761,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'beautiful-ai',
+        slug: 'beautiful-ai',
         name: 'Beautiful.ai',
         shortDescription: 'AI-powered presentation maker.',
         fullDescription: 'Create stunning presentations with AI...',
@@ -737,6 +779,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'tome',
+        slug: 'tome',
         name: 'Tome',
         shortDescription: 'AI-powered storytelling and presentations.',
         fullDescription: 'Generate entire presentations from prompts...',
@@ -754,6 +797,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'mem-ai',
+        slug: 'mem-ai',
         name: 'Mem',
         shortDescription: 'AI-powered note-taking and knowledge base.',
         fullDescription: 'Self-organizing workspace powered by AI...',
@@ -771,6 +815,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'reclaim-ai',
+        slug: 'reclaim-ai',
         name: 'Reclaim.ai',
         shortDescription: 'AI calendar assistant for time management.',
         fullDescription: 'Automatically schedule your ideal week...',
@@ -788,6 +833,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'krisp',
+        slug: 'krisp',
         name: 'Krisp',
         shortDescription: 'AI noise cancellation for calls.',
         fullDescription: 'Remove background noise from calls with AI...',
@@ -805,6 +851,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'timely',
+        slug: 'timely',
         name: 'Timely',
         shortDescription: 'AI-powered automatic time tracking.',
         fullDescription: 'Track time automatically with AI...',
@@ -822,6 +869,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'superhuman',
+        slug: 'superhuman',
         name: 'Superhuman',
         shortDescription: 'AI-powered email client for productivity.',
         fullDescription: 'The fastest email experience with AI...',
@@ -841,6 +889,7 @@ export const tools: Tool[] = [
     // Marketing & SEO (6 tools)
     {
         id: 'surfer-seo',
+        slug: 'surfer-seo',
         name: 'Surfer SEO',
         shortDescription: 'AI-powered SEO optimization tool.',
         fullDescription: 'Optimize content for search engines with AI...',
@@ -858,6 +907,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'semrush-ai',
+        slug: 'semrush-ai',
         name: 'Semrush AI',
         shortDescription: 'AI-powered SEO and marketing toolkit.',
         fullDescription: 'Complete SEO solution with AI features...',
@@ -875,6 +925,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'adcreative-ai',
+        slug: 'adcreative-ai',
         name: 'AdCreative.ai',
         shortDescription: 'AI-powered ad creative generation.',
         fullDescription: 'Generate conversion-focused ad creatives with AI...',
@@ -892,6 +943,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'lately-ai',
+        slug: 'lately-ai',
         name: 'Lately',
         shortDescription: 'AI social media content generator.',
         fullDescription: 'Turn long-form content into social posts with AI...',
@@ -909,6 +961,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'copy-smith',
+        slug: 'copy-smith',
         name: 'Copysmith',
         shortDescription: 'AI copywriting for ecommerce and marketing.',
         fullDescription: 'Generate product descriptions and marketing copy...',
@@ -926,6 +979,7 @@ export const tools: Tool[] = [
     },
     {
         id: 'brandwatch',
+        slug: 'brandwatch',
         name: 'Brandwatch',
         shortDescription: 'AI-powered social media monitoring.',
         fullDescription: 'Track brand mentions and sentiment with AI...',

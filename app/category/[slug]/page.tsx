@@ -31,7 +31,7 @@ export default async function CategoryPage({ params }: PageProps) {
             .from('tools')
             .select('category');
 
-        const uniqueCategories = [...new Set(allCategories?.map(t => t.category) || [])];
+        const uniqueCategories = Array.from(new Set(allCategories?.map(t => t.category) || []));
 
         if (!uniqueCategories.includes(params.slug)) {
             notFound();
