@@ -15,15 +15,7 @@ interface PageProps {
     };
 }
 
-// Revalidate every hour
-export const revalidate = 3600;
-
-export async function generateStaticParams() {
-    const { data: tools } = await supabase.from('tools').select('slug');
-    return (tools || []).map((tool) => ({
-        slug: tool.slug,
-    }));
-}
+export const dynamic = 'force-dynamic';
 
 export default async function ToolDetailPage({ params }: PageProps) {
     const { data: dbTool } = await supabase
